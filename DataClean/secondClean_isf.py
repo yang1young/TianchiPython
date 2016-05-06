@@ -18,7 +18,7 @@ config1 = open("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputDat
 i = 0
 for line in config1.readlines():
     list1 = line.strip().split(',')
-    key = str(list1[1])+str(list1[2])
+    key = str(list1[1])+"_"+str(list1[2])
     config_dic[key] = list1[3]
 
 for line in isf1.readlines():
@@ -28,7 +28,8 @@ for line in isf1.readlines():
         isf2.writelines(line+'\n')
         continue
     list1 = line.strip().split(',')
-    key  = str(list1[2])+str(list1[3])
+    # key  = str(list1[2])+str(list1[3])
+    key = str(list1[2])+'_all'
     a_b = config_dic[key]
     line = line.strip() + ","+config_dic[key].split('_')[0]+"," + config_dic[key].split('_')[1]
     isf2.writelines(line+'\n')

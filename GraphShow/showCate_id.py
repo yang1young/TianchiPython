@@ -3,14 +3,13 @@
 # @Time    : 16/4/16 下午3:21
 # @Author  : ZHZ
 
-i
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 
 def showCate_id(cateID,number):
-    df = pd.read_csv("2_isf2.csv",index_col=0)
+    df = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/2_isf2.csv",index_col=0)
     df39 = df[df['cate_id']==cateID]
     df39_date = df39.date.value_counts()
     df39_date.sort_index()

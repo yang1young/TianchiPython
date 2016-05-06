@@ -12,8 +12,6 @@ import os
 #item_feature = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_if1.csv",index_col=0)
 item_feature = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/FilteredData/filtered_outlier_if.csv")
 
-
-
 #每天采样记录条数的图表
 def saveDaysFigureToFile(df,filename):
     path = "/Users/zhuohaizhen/Desktop/Item/"

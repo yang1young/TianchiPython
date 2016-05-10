@@ -7,7 +7,7 @@
 
 import pandas as pd
 import numpy as np
-if1 = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_isf1.csv",index_col=0)
+if1 = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_if1.csv",index_col=0)
 # isf1 = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_isf1.csv",index_col=0)
 print "orginal",if1.qty_alipay_njhs.mean(),len(if1)
 
@@ -39,5 +39,5 @@ def filteredDataframe(if1,name):
         if1 = if1.append(new_temp_fd,ignore_index=True)
     if1.to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/'+name,index=None,columns=None)
     print len(if1)
-filteredDataframe(if1,"1_isf1_filtered.csv")
+filteredDataframe(if1,"1_if1_filtered.csv")
 #filteredDataframe(isf1,"1_isf1_filtered.csv")

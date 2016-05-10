@@ -5,7 +5,7 @@
 import pandas as pd
 import datetime
 
-item_store_feature = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/2_isf2.csv", index_col=0)
+item_store_feature = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_isf1.csv", index_col=0)
 item_feature = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_if1.csv", index_col=0)
 
 days_20141009 = datetime.datetime(2014, 10, 9)

@@ -9,7 +9,7 @@ import datetime
 global sum_flag
 num_days = 14
 sum_flag_temp = 0
-huadong = 1
+huadong = 14
 days_20141009 = datetime.datetime(2014, 10, 9)
 item_id_dict = {}
 all_item_sum = []
@@ -72,14 +72,34 @@ def countByDays_if(dataframe, start_day, end_day):
 
     if start_day > end_day:
         return None,0
+    huadong_dataframe = dataframe
+    huadong_dataframe = huadong_dataframe[huadong_dataframe['days_20141009']>=(start_day+huadong)]
+    huadong_dataframe = huadong_dataframe[huadong_dataframe['days_20141009']<=(end_day+huadong)]
+
+
     dataframe = dataframe[dataframe['days_20141009']>=start_day]
     dataframe = dataframe[dataframe['days_20141009']<=end_day]
+
+
     if len(dataframe)<=0:
         return None,0
-    per = float(num_days)/float(len(dataframe))
-    temp = getWeekdays(dataframe,start_day,end_day)
 
-    temp['date'] = end_day+1
+    per = float(num_days)/len(dataframe)
+    if(len(huadong_dataframe)==0 or dataframe.days_20141009.max()==444):
+        huadong_per = 0
+    elif(len(huadong_dataframe)<(num_days)/2):
+        return None,0
+    elif(len(huadong_dataframe)>0):
+        huadong_per = (num_days)/float(len(huadong_dataframe))
+
+
+
+
+    #print huadong_per,"***************"
+
+
+    temp = getWeekdays(dataframe,start_day,end_day)
+    temp['date'] = end_day+huadong
     temp['item_id'] = item_id_dict[int(dataframe.item_id.mean())]
     temp['cate_id'] = dataframe.cate_id.max()
     temp['cate_level_id'] = dataframe.cate_level_id.max()
@@ -108,19 +128,19 @@ def countByDays_if(dataframe, start_day, end_day):
     temp['jhs_pv_uv'] = dataframe.jhs_pv_uv.sum()*per
     temp['num_alipay_njhs'] = dataframe.num_alipay_njhs.sum()*per
     temp['amt_alipay_njhs'] = dataframe.amt_alipay_njhs.sum()*per
-    temp['qty_alipay_njhs'] = dataframe.qty_alipay_njhs.sum()*per
     temp['unum_alipay_njhs'] = dataframe.unum_alipay_njhs.sum()*per
+    temp['qty_alipay_njhs'] = huadong_dataframe.qty_alipay_njhs.sum()*huadong_per
     temp['is_final'] = False
 
-
     sum_flag_temp = dataframe.qty_alipay_njhs.sum()*per
-    if temp['date'] == 445:
+    if temp['date'] == (444+huadong):
         count2.append(0)
         temp['is_final'] = True
 
     if temp['is_final']==True:
         flag['flag'] = True
     return temp,sum_flag_temp
+
 
 def TransferDataByDays_if():
     new_father_kid_item_x = []
@@ -134,7 +154,6 @@ def TransferDataByDays_if():
         flag_day = last_day-num_days+1
         #print first_day,last_day
         father_kid_item  = father_kid_item.sort_values('days_20141009')
-        sum_flag = 0
 
         while(flag_day>=first_day):
             flag_day = flag_day - 1
@@ -145,14 +164,13 @@ def TransferDataByDays_if():
             if temp == None:
                 continue
 
-            temp['qty_alipay_njhs']  = sum_flag
-            sum_flag = sum_flag_temp
+            #temp['qty_alipay_njhs']  = sum_flag
+            #sum_flag = sum_flag_temp
             new_father_kid_item_x.append(temp)
             new_father_kid_item_all.append(temp)
-
-        if flag['flag']==False and last_day<445-num_days+1:
-            print temp['item_id'],"**************"
-            new_temp = {"item_id":temp['item_id'],"date":445,"pv_ipv":0,"pv_uv":0,"cart_ipv":0,"cart_uv":0,
+        if flag['flag']==False and last_day<444-num_days+1:
+            print item_id_dict[temp['item_id']],"**************"
+            new_temp = {"item_id":temp['item_id'],"date":(444+huadong),"pv_ipv":0,"pv_uv":0,"cart_ipv":0,"cart_uv":0,
             "collect_uv":0,"num_gmv":0,"amt_gmv":0,"qty_gmv":0,"unum_gmv":0,"amt_alipay":0,"num_alipay":0,"qty_alipay":0
                            ,"unum_alipay":0,
             "ztc_pv_ipv":0,"tbk_pv_ipv":0,"ss_pv_ipv":0,"jhs_pv_ipv":0,"ztc_pv_uv":0,"tbk_pv_uv":0,"ss_pv_uv":0,"jhs_pv_uv":0
@@ -169,11 +187,15 @@ def TransferDataByDays_if():
             "amt_alipay_njhs","unum_alipay_njhs","is_final","Workdays","qty_alipay_njhs"])
 
         #new_father_kid_item_train = new_father_kid_item_train[new_father_kid_item_train['is_final']==False]
+        # new_father_kid_item_train.drop(["is_final"],axis = 1).\
+
         new_father_kid_item_train.drop(["is_final",'item_id','date'],axis = 1).\
             to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/2016_05_05_3std/train'+str(item_id_dict[i[2]])+'.csv',index = None,columns=None)
         new_father_kid_item_x = []
         # if(len(count2)==20):
-            # break
+        print item_id_dict[i[2]],i,"******************"
+        print father_kid_item[['days_20141009','pv_ipv','qty_alipay_njhs']]
+        break
     print len(count1),len(count2)
 
     new_father_kid_item_all = pd.DataFrame(new_father_kid_item_all,columns=[

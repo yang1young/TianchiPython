@@ -18,7 +18,7 @@ count1 = []
 count2 = []
 flag = {}
 flag['flag'] = False
-filtered_outlier_if = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_if1_filtered_3std.csv");
+filtered_outlier_if = pd.read_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/OutputData/1_isf1_filtered_3std.csv");
 filtered_outlier_if['days_20141009'] = filtered_outlier_if['date'].\
     map(lambda x:(datetime.datetime(x / 10000, x / 100 % 100, x % 100) - days_20141009).days)
 
@@ -142,13 +142,16 @@ def countByDays_if(dataframe, start_day, end_day):
     return temp,sum_flag_temp
 
 
-def TransferDataByDays_if():
+def TransferDataByDays_if(store_code):
     new_father_kid_item_x = []
     new_father_kid_item_all = []
     for i,father_kid_item in filtered_outlier_if.groupby([filtered_outlier_if['cate_level_id'],
                                             filtered_outlier_if['cate_id'],
-                                            filtered_outlier_if['item_id']]):
-
+                                            filtered_outlier_if['item_id'],
+                                            filtered_outlier_if['store_code']]):
+        if(str(store_code)!=str(i[3])):
+            print "*******",store_code,i[3]
+            continue
         first_day = father_kid_item.days_20141009.min()
         last_day = father_kid_item.days_20141009.max()
         flag_day = last_day-num_days+1
@@ -168,9 +171,10 @@ def TransferDataByDays_if():
             #sum_flag = sum_flag_temp
             new_father_kid_item_x.append(temp)
             new_father_kid_item_all.append(temp)
+            print i[2],"&&&&&&&&&&"
+            # exit()
         if flag['flag']==False and last_day<444-num_days+1:
-            print item_id_dict[temp['item_id']],"**************"
-            new_temp = {"item_id":temp['item_id'],"date":(444+huadong),"pv_ipv":0,"pv_uv":0,"cart_ipv":0,"cart_uv":0,
+            new_temp = {"item_id":i[2],"date":(444+huadong),"pv_ipv":0,"pv_uv":0,"cart_ipv":0,"cart_uv":0,
             "collect_uv":0,"num_gmv":0,"amt_gmv":0,"qty_gmv":0,"unum_gmv":0,"amt_alipay":0,"num_alipay":0,"qty_alipay":0
                            ,"unum_alipay":0,
             "ztc_pv_ipv":0,"tbk_pv_ipv":0,"ss_pv_ipv":0,"jhs_pv_ipv":0,"ztc_pv_uv":0,"tbk_pv_uv":0,"ss_pv_uv":0,"jhs_pv_uv":0
@@ -190,10 +194,10 @@ def TransferDataByDays_if():
         # new_father_kid_item_train.drop(["is_final"],axis = 1).\
 
         new_father_kid_item_train[new_father_kid_item_train['is_final']==False].drop(["is_final",'date'],axis = 1).\
-            to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/2016_05_05_3std/train'+str(item_id_dict[i[2]])+'_all.csv',index = None,columns=None)
+            to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/2016_05_05_3std_'+str(store_code)+'/train'+str(item_id_dict[i[2]])+'_all.csv',index = None,columns=None)
         new_father_kid_item_x = []
         print item_id_dict[i[2]],i,"******************"
-        print father_kid_item[['days_20141009','pv_ipv','qty_alipay_njhs']]
+        # print father_kid_item[['days_20141009','pv_ipv','qty_alipay_njhs']]
         # if(len(count2)==10):
         #     break
     print len(count1),len(count2)
@@ -205,12 +209,12 @@ def TransferDataByDays_if():
             "amt_alipay_njhs","unum_alipay_njhs","is_final","Workdays","qty_alipay_njhs"])
 
     new_father_kid_item_all.to_csv("/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/"
-                                        "Data/2016_05_05_3std/if_all.csv",index = None,columns=None)
+                                        "Data/2016_05_05_3std_"+str(store_code)+"/if_all.csv",index = None,columns=None)
     if_all_predict = new_father_kid_item_all[new_father_kid_item_all['is_final']].drop(["is_final"],axis = 1)
 
     if_all_predict = if_all_predict.sort_values('item_id').drop(["date"],axis = 1)
     # if_all_predict = new_father_kid_item_all.drop(["item_id"],axis = 1)
-    if_all_predict.to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/2016_05_05_3std/if_all_predict.csv',index = None,columns=None)
+    if_all_predict.to_csv('/Users/zhuohaizhen/PycharmProjects/Tianchi_Python/Data/2016_05_05_3std_'+str(store_code)+'/if_all_predict.csv',index = None,columns=None)
 
 def transItemID():
     item_ids = filtered_outlier_if.item_id.value_counts().sort_values().index
@@ -227,4 +231,8 @@ def transItemID():
 
 
 transItemID()
-TransferDataByDays_if()
+TransferDataByDays_if(1)
+TransferDataByDays_if(2)
+TransferDataByDays_if(3)
+TransferDataByDays_if(4)
+TransferDataByDays_if(5)
